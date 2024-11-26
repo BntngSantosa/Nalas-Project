@@ -32,13 +32,19 @@ const createUser = async (newUser) => {
 };
 
 const deleteUser = async (id) => {
-  await getUsersById(id);
+  try {
+    await prisma.warisanBudaya.deleteMany({
+      where: {
+        authorId: id,
+      },
+    });
 
-  await prisma.users.delete({
-    where: {
-      id,
-    },
-  });
+    await prisma.users.delete({
+      where: {
+        id,
+      },
+    });
+  } catch (error) {}
 };
 
 const updateUserById = async (id, user) => {
@@ -51,7 +57,7 @@ const updateUserById = async (id, user) => {
     },
     data: {
       username: user.username,
-      email: user.email
+      email: user.email,
     },
   });
   return newUser;
