@@ -4,8 +4,8 @@ import ProtectedRoute from "../../layouts/admin/ProtectedLayoutAdmin";
 
 export default function WbData() {
   return (
-    <ProtectedRoute>
+    // <ProtectedRoute>
       <WbDataLyout />
-    </ProtectedRoute>
+    // </ProtectedRoute>
   );
 }

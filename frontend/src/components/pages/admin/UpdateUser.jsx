@@ -4,8 +4,8 @@ import ProtectedRoute from "../../layouts/admin/ProtectedLayoutAdmin";
 
 export default function UpdateUser() {
   return (
-    <ProtectedRoute>
+    // <ProtectedRoute>
       <UpdateUserLayout />
-    </ProtectedRoute>
+    // </ProtectedRoute>
   );
 }

@@ -4,8 +4,8 @@ import ProtectedRoute from "../../layouts/admin/ProtectedLayoutAdmin";
 
 export default function TambahUser() {
   return (
-    <ProtectedRoute>
+    // <ProtectedRoute>
       <TambahUserLayout />
-    </ProtectedRoute>
+    // </ProtectedRoute>
   );
 }

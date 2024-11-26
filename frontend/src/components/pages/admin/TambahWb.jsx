@@ -4,8 +4,8 @@ import ProtectedRoute from "../../layouts/admin/ProtectedLayoutAdmin";
 
 export default function TambahWb() {
   return (
-    <ProtectedRoute>
+    // <ProtectedRoute>
       <TambahWbAdminLayout />
-    </ProtectedRoute>
+    // </ProtectedRoute>
   );
 }
