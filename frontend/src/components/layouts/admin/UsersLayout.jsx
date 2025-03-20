@@ -12,6 +12,12 @@ import {
   HStack,
   useToast,
   Box,
+  AlertDialog,
+  AlertDialogBody,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogContent,
+  AlertDialogOverlay,
 } from "@chakra-ui/react";
 import FetchAllUsers from "../../../services/FetchAllUsers";
 import { Link } from "react-router-dom";
@@ -31,6 +37,11 @@ export default function Users() {
   const toast = useToast();
   const pageSize = 5;
 
+  // State untuk AlertDialog
+  const [isOpen, setIsOpen] = useState(false);
+  const [selectedUserId, setSelectedUserId] = useState(null);
+  const cancelRef = React.useRef();
+
   useEffect(() => {
     const fetchData = async () => {
       const userData = await FetchAllUsers();
@@ -39,7 +50,6 @@ export default function Users() {
     fetchData();
   }, []);
 
-  // Menghitung data untuk halaman saat ini
   const paginatedUsers = users.slice(
     (currentPage - 1) * pageSize,
     currentPage * pageSize
@@ -50,10 +60,19 @@ export default function Users() {
     setCurrentPage((prev) => Math.min(prev + 1, totalPages));
   const handlePrevPage = () => setCurrentPage((prev) => Math.max(prev - 1, 1));
 
-  const handleDelete = async (userId) => {
+  // Fungsi untuk membuka dialog
+  const confirmDelete = (userId) => {
+    setSelectedUserId(userId);
+    setIsOpen(true);
+  };
+
+  // Fungsi untuk menghapus user setelah konfirmasi
+  const handleDelete = async () => {
     try {
-      await DeleteData(userId);
-      setUsers((prevUsers) => prevUsers.filter((user) => user.id !== userId));
+      await DeleteData(selectedUserId);
+      setUsers((prevUsers) =>
+        prevUsers.filter((user) => user.id !== selectedUserId)
+      );
       toast({
         title: "Data berhasil dihapus.",
         status: "success",
@@ -69,6 +88,9 @@ export default function Users() {
         isClosable: true,
         position: "bottom-right",
       });
+    } finally {
+      setIsOpen(false);
+      setSelectedUserId(null);
     }
   };
 
@@ -115,7 +137,7 @@ export default function Users() {
                     <Button
                       colorScheme="red"
                       size="md"
-                      onClick={() => handleDelete(user.id)}
+                      onClick={() => confirmDelete(user.id)}
                     >
                       <FontAwesomeIcon icon={faTrash} />
                     </Button>
@@ -138,6 +160,35 @@ export default function Users() {
           <FontAwesomeIcon icon={faCaretRight} />
         </Button>
       </HStack>
+
+      {/* Alert Dialog Konfirmasi Hapus */}
+      <AlertDialog
+        isOpen={isOpen}
+        leastDestructiveRef={cancelRef}
+        onClose={() => setIsOpen(false)}
+      >
+        <AlertDialogOverlay>
+          <AlertDialogContent>
+            <AlertDialogHeader fontSize="lg" fontWeight="bold">
+              Konfirmasi Hapus
+            </AlertDialogHeader>
+
+            <AlertDialogBody>
+              Apakah Anda yakin ingin menghapus user ini? Tindakan ini tidak
+              dapat dibatalkan.
+            </AlertDialogBody>
+
+            <AlertDialogFooter>
+              <Button ref={cancelRef} onClick={() => setIsOpen(false)}>
+                Batal
+              </Button>
+              <Button colorScheme="red" onClick={handleDelete} ml={3}>
+                Hapus
+              </Button>
+            </AlertDialogFooter>
+          </AlertDialogContent>
+        </AlertDialogOverlay>
+      </AlertDialog>
     </Stack>
   );
 }

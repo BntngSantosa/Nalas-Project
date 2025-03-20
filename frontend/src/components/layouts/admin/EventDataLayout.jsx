@@ -12,6 +12,12 @@ import {
   HStack,
   useToast,
   Box,
+  AlertDialog,
+  AlertDialogBody,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogContent,
+  AlertDialogOverlay,
 } from "@chakra-ui/react";
 import { Link } from "react-router-dom";
 import DeleteWb from "../../../services/DeleteWb";
@@ -32,8 +38,11 @@ import FetchAllEvent from "../../../services/FetchAllEvent";
 export default function EventDataLayout() {
   const [eventWb, setEventWb] = useState([]);
   const [currentPage, setCurrentPage] = useState(1);
+  const [isOpen, setIsOpen] = useState(false);
+  const [selectedId, setSelectedId] = useState(null);
   const toast = useToast();
   const pageSize = 5;
+  const cancelRef = React.useRef();
 
   useEffect(() => {
     const fetchData = async () => {
@@ -95,10 +104,12 @@ export default function EventDataLayout() {
     }
   };
 
-  const handleDelete = async (wbId, location = "event") => {
+  const handleDelete = async () => {
     try {
-      await DeleteWb(wbId, location);
-      setEventWb((prevEventWb) => prevEventWb.filter((eventWb) => eventWb.id !== wbId));
+      await DeleteWb(selectedId, "event");
+      setEventWb((prevEventWb) =>
+        prevEventWb.filter((event) => event.id !== selectedId)
+      );
       toast({
         title: "Data berhasil dihapus.",
         status: "success",
@@ -114,6 +125,8 @@ export default function EventDataLayout() {
         isClosable: true,
         position: "bottom-right",
       });
+    } finally {
+      setIsOpen(false);
     }
   };
 
@@ -210,7 +223,10 @@ export default function EventDataLayout() {
                     <Button
                       colorScheme="red"
                       size="md"
-                      onClick={() => handleDelete(eventWb.id)}
+                      onClick={() => {
+                        setSelectedId(eventWb.id);
+                        setIsOpen(true);
+                      }}
                     >
                       <FontAwesomeIcon icon={faTrash} />
                     </Button>
@@ -233,6 +249,34 @@ export default function EventDataLayout() {
           <FontAwesomeIcon icon={faCaretRight} />
         </Button>
       </HStack>
+      {/* AlertDialog for delete confirmation */}
+      <AlertDialog
+        isOpen={isOpen}
+        leastDestructiveRef={cancelRef}
+        onClose={() => setIsOpen(false)}
+      >
+        <AlertDialogOverlay>
+          <AlertDialogContent>
+            <AlertDialogHeader fontSize="lg" fontWeight="bold">
+              Konfirmasi Hapus
+            </AlertDialogHeader>
+
+            <AlertDialogBody>
+              Apakah Anda yakin ingin menghapus data ini? Tindakan ini tidak
+              dapat dibatalkan.
+            </AlertDialogBody>
+
+            <AlertDialogFooter>
+              <Button ref={cancelRef} onClick={() => setIsOpen(false)}>
+                Batal
+              </Button>
+              <Button colorScheme="red" onClick={handleDelete} ml={3}>
+                Hapus
+              </Button>
+            </AlertDialogFooter>
+          </AlertDialogContent>
+        </AlertDialogOverlay>
+      </AlertDialog>
     </Stack>
   );
 }

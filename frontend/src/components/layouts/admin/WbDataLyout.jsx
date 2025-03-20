@@ -12,6 +12,12 @@ import {
   HStack,
   useToast,
   Box,
+  AlertDialog,
+  AlertDialogBody,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogContent,
+  AlertDialogOverlay,
 } from "@chakra-ui/react";
 import { Link } from "react-router-dom";
 import FetchAllWb from "../../../services/FetchAllWb";
@@ -34,6 +40,9 @@ export default function WbDataLyout() {
   const [currentPage, setCurrentPage] = useState(1);
   const toast = useToast();
   const pageSize = 5;
+  const [isOpen, setIsOpen] = useState(false);
+  const [selectedId, setSelectedId] = useState(null);
+  const cancelRef = React.useRef();
 
   useEffect(() => {
     const fetchData = async () => {
@@ -95,10 +104,10 @@ export default function WbDataLyout() {
     }
   };
 
-  const handleDelete = async (wbId, location = "wb") => {
+  const handleDelete = async () => {
     try {
-      await DeleteWb(wbId, location);
-      setWb((prevWb) => prevWb.filter((wb) => wb.id !== wbId));
+      await DeleteWb(selectedId, "wb");
+      setEventWb((prevWb) => prevWb.filter((wb) => wb.id !== selectedId));
       toast({
         title: "Data berhasil dihapus.",
         status: "success",
@@ -221,7 +230,10 @@ export default function WbDataLyout() {
                     <Button
                       colorScheme="red"
                       size="md"
-                      onClick={() => handleDelete(wb.id)}
+                      onClick={() => {
+                        setSelectedId(wb.id);
+                        setIsOpen(true);
+                      }}
                     >
                       <FontAwesomeIcon icon={faTrash} />
                     </Button>
@@ -244,6 +256,33 @@ export default function WbDataLyout() {
           <FontAwesomeIcon icon={faCaretRight} />
         </Button>
       </HStack>
+      <AlertDialog
+        isOpen={isOpen}
+        leastDestructiveRef={cancelRef}
+        onClose={() => setIsOpen(false)}
+      >
+        <AlertDialogOverlay>
+          <AlertDialogContent>
+            <AlertDialogHeader fontSize="lg" fontWeight="bold">
+              Konfirmasi Hapus
+            </AlertDialogHeader>
+
+            <AlertDialogBody>
+              Apakah Anda yakin ingin menghapus data ini? Tindakan ini tidak
+              dapat dibatalkan.
+            </AlertDialogBody>
+
+            <AlertDialogFooter>
+              <Button ref={cancelRef} onClick={() => setIsOpen(false)}>
+                Batal
+              </Button>
+              <Button colorScheme="red" onClick={handleDelete} ml={3}>
+                Hapus
+              </Button>
+            </AlertDialogFooter>
+          </AlertDialogContent>
+        </AlertDialogOverlay>
+      </AlertDialog>
     </Stack>
   );
 }

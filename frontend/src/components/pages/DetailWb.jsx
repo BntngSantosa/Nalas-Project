@@ -4,8 +4,8 @@ import ProtectedLayout from "../layouts/ProtectedLayout";
 
 export default function DetailWb() {
   return (
-    <ProtectedLayout>
+    // <ProtectedLayout>
       <DetailWbLayout />
-    </ProtectedLayout>
+    // </ProtectedLayout>
   );
 }

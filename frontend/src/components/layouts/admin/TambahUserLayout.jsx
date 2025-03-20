@@ -1,5 +1,5 @@
 import React, { useState } from 'react'
-import { Alert, AlertIcon, AlertTitle, Box, Spinner, useToast } from '@chakra-ui/react';
+import { Alert, AlertIcon, AlertTitle, Box, Spinner, useToast, AlertDescription } from '@chakra-ui/react';
 import { motion } from 'framer-motion';
 import useScrollAnimation from '../../../hooks/useScrollAnimation';
 import daftarUser from '../../../services/SignUpService';
@@ -7,8 +7,6 @@ import { Form, Formik } from 'formik';
 import FormTitle from '../../fragments/formtitle/FormTitle';
 import InputForm from '../../fragments/inputform/InputForm';
 import ErrorForm from '../../fragments/errorform/ErrorForm';
-import LoginSignup from '../../fragments/loginorsignup/LoginSignup';
-import FooterLayout from '../FooterLayout';
 import ButtonDaftar from "../../fragments/button/ButtonForm"
 import { daftarValidation } from '../../../validations/DaftarValidation';
 
@@ -135,7 +133,7 @@ export default function TambahUserLayout({duration}) {
                 )}
 
                 <ButtonDaftar type="submit" disabled={loading || isSubmitting}>
-                  {loading ? <Spinnernner size="sm" /> : "Tambah"}
+                  {loading ? <Spinner size="sm" /> : "Tambah"}
                 </ButtonDaftar>
               </div>
             </Form>
